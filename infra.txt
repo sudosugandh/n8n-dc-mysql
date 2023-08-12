@@ -36,3 +36,5 @@ sudo ln -s /etc/nginx/sites-available/jem.conf  /etc/nginx/sites-enabled/
 sudo service nginx restart
 
 
+[local]
+exten => _X.,1,Dial(SIP/${EXTEN}@user1)
