@@ -1,0 +1,42 @@
+# Install Meilisearch via CURL
+curl -L https://install.meilisearch.com | sh
+
+# Make it accessible : To make meilisearch accessible (callable) from anywhere, run
+mv ./meilisearch /usr/bin/
+
+# it moves binary to your system binaries : Now you can run
+meilisearch
+
+# Run in background
+cd /etc/systemd/system/
+
+# Create new service file called ‘meilisearch.service’
+touch meilisearch.service
+
+# Edit the file
+sudo nano meilisearch.service
+
+# Add this
+[Unit]
+Description=Meilisearch
+After=systemd-user-sessions.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/meilisearch --http-addr 127.0.0.1:7700 --env production --master-key Y0urVery-S3cureAp1K3y
+
+[Install]
+WantedBy=default.target
+
+!remember to change your password/API key with your own custom key.
+# Run and check
+systemctl enable meilisearch
+systemctl start meilisearch
+systemctl status meilisearch
+
+
+
+
+
+
+
