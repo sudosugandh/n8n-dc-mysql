@@ -1,0 +1,180 @@
+K8s Links
+
+https://github.com/cytopia/devilbox
+https://github.com/sprintcube/docker-compose-lamp
+https://www.linkedin.com/pulse/deploy-your-first-scaleable-phpmysql-web-application-raghav-agarwal
+
+#Communication
+https://www.youtube.com/watch?v=-SKSihRjKQA
+
+https://www.linkedin.com/posts/praseedas_aws-app-mesh-on-amazon-eks-an-advanced-activity-6773119866993033216-YzlI?trk=public_profile_like_view
+
+pm2 start yarn --name "shop-rest" -- start:shop-rest
+pm2 start yarn --name "admin-rest" -- start:admin-rest
+
+
+#Wordprss on k8s
+https://engr-syedusmanahmad.medium.com/wordpress-on-kubernetes-cluster-step-by-step-guide-749cb53e27c7
+
+#Magento on k8s
+https://kiwee.eu/blog/magento-2-on-kubernetes/#All-in-one
+
+#WordPress on k8s with ingress
+https://medium.com/@ezekiel.umesi/deploy-a-wordpress-application-on-a-kubernetes-cluster-using-ingress-cert-manager-and-helm-1f3b34356197
+
+Server Links
+
+AWS Session MAnager 
+https://www.youtube.com/watch?v=lYKFvuwGri8
+
+How to reduce your aws cost
+https://george-51059.medium.com/reduce-aws-costs-74ef79f4f348
+
+#How to Setup High-Availability Load Balancer with ‘HAProxy’ to Control Web Server Traffic
+https://www.linkedin.com/pulse/how-setup-high-availability-load-balancer-haproxy-web-ali-bin-akhtar?trk=article-ssr-frontend-pulse_more-articles_related-content-card
+
+
+Server Configuration
+Socket
+
+cat /etc/nginx/sites-enabled/server.conf 
+server {
+    server_name ebsusa.biz https://www.ebsusa.biz;
+    root /var/www/blog;
+
+    index index.php index.html index.htm;
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock; # Adjust the PHP version if necessary
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+        expires max;
+        log_not_found off;
+    }
+
+    location = /favicon.ico { log_not_found off; access_log off; }
+    location = /robots.txt { log_not_found off; access_log off; allow all; }
+    location ~* \.(xml|ogg|ogv|svg|svgz|eot|otf|woff|mp4|ttf|css|rss|atom|js|jpg|jpeg|gif|png|ico|zip|tgz|gz|rar|bz2|doc|xls|exe|ppt|tar|mid|midi|wav|bmp|rtf)$ {
+        expires max; log_not_found off; access_log off;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/ebsusa.biz/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/ebsusa.biz/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+server {
+    server_name panel.edgestoinvest.com;
+    root /var/www/backend/public;
+
+    index index.php index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+#        auth_basic "Restricted Access";
+#        auth_basic_user_file /etc/nginx/.htpasswd;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock; # Adjust the PHP version if necessary
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+
+    # listen 443 ssl; # Temporarily commented out
+    # ssl_certificate /etc/letsencrypt/live/panel.edgestoinvest.com/fullchain.pem; # managed by Certbot
+    # ssl_certificate_key /etc/letsencrypt/live/panel.edgestoinvest.com/privkey.pem; # managed by Certbot
+    # include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    # ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot # Temporarily serve without SSL
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/panel.edgestoinvest.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/panel.edgestoinvest.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+server {
+    server_name dev.edgestoinvest.com;
+
+    location /socket {
+        proxy_pass http://localhost:9000; # Adjust the port if necessary
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    root /var/www/react/build; # Path to your React build directory
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/dev.edgestoinvest.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/dev.edgestoinvest.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+server {
+    server_name socket.edgestoinvest.com;
+
+    location / {
+        proxy_pass http://localhost:9000; # Adjust the port if necessary
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/socket.edgestoinvest.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/socket.edgestoinvest.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
+server {
+    if ($host = socket.edgestoinvest.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+    listen 80;
+    server_name socket.edgestoinvest.com;
+    return 404; # managed by Certbot
+
+}
+
+
+
+
+
+#Magento With Varnish
+
+https://olegnax.com/speed-up-magento-2-with-varnish-and-nginx-as-ssl-termination-on-ubuntu/
+
+
