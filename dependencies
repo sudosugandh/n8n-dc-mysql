@@ -8,3 +8,4 @@ sudo apt install php8.2 libapache2-mod-php8.2 php8.2-fpm php7.4-fpm php8.2-commo
 
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
 
+sudo echo "username  ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/username
