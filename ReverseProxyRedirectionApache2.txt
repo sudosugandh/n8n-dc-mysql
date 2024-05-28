@@ -1,0 +1,29 @@
+#Set Up Reverse Proxy Redirection in Apache 2
+
+1. sudo apt install apache2 -y
+2. sudo nano /etc/apache2/sites-enabled/000-default.conf
+
+#Virtual Host with Apache Reverse Proxy
+
+<VirtualHost *:80>
+
+    DocumentRoot /var/www/html
+    <Directory /var/www/html>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ProxyPreserveHost On
+    ProxyPass / http://127.0.0.1:3000/
+    ProxyPassReverse / http://127.0.0.1:3000/
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+</VirtualHost>
+
+
+3. sudo a2enmod proxy
+4. sudo a2enmod proxy_http
+5. sudo systemctl restart apache2.service
