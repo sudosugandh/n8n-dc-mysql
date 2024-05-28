@@ -27,3 +27,22 @@
 3. sudo a2enmod proxy
 4. sudo a2enmod proxy_http
 5. sudo systemctl restart apache2.service
+
+
+#Deploying React App with Apache Server without pm2
+
+<VirtualHost *:80>
+
+    ServerName example.com
+    DocumentRoot /var/www/edge-pwa-react/build
+
+    <Directory /var/www/edge-pwa-react/build>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+</VirtualHost>
